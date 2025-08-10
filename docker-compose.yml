@@ -1,0 +1,48 @@
+services:
+  accounts-service:
+    image: "sayemx/accounts-service:s4"
+    container_name: accounts-service
+    ports:
+     - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+     - microservice
+  
+  loans-service:
+    image: "sayemx/loans-service:s4"
+    container_name: loans-service
+    ports:
+     - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+     - microservice
+          
+  cards-service:
+    image: "sayemx/cards-service:s4"
+    container_name: cards-service
+    ports:
+     - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+     - microservice
+
+networks:
+  microservice:
+    driver: "bridge"
+          
+          
+          
+          
+          
+          
+          
+          

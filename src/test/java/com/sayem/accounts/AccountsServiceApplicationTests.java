@@ -1,4 +1,4 @@
-package com.sayem;
+package com.sayem.accounts;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
