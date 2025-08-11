@@ -83,7 +83,7 @@
 				
 				<configuration>
 					<image>
-						<name>sayemx/${project.artifactId}:s4</name>
+						<name>sayemx/${project.artifactId}:s6</name>
 					</image>
 				</configuration>
 			</plugin>

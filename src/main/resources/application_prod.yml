@@ -1,0 +1,20 @@
+
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+build:
+  version: 1.0
+
+accounts:
+  message: "Welcome to Accounts app of Prod"
+  contactDetails:
+    name: Johny Doe
+    email: johny@example.com
+  onCallSupport:
+   - 955-955-955
+   - 088-088-088
+
+
+

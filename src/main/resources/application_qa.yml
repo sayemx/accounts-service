@@ -1,0 +1,20 @@
+
+spring:
+  config:
+    activate:
+      on-profile: "qa"
+    
+build:
+  version: 2.0
+
+accounts:
+  message: "Welcome to Accounts app of QA"
+  contactDetails:
+    name: Ferrt Yilmaz
+    email: Ferrir@example.com
+  onCallSupport:
+   - 155-155-155
+   - 488-488-488
+
+
+

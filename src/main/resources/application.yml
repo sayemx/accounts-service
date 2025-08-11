@@ -6,6 +6,13 @@ logging:
 server:
   port: 8080
 spring:
+  config:
+    import:
+     - "application_qa.yml"
+     - "application_prod.yml"
+  profiles:
+    active:
+      - "qa"
   application:
     name: accounts-service
   datasource:
@@ -23,6 +30,19 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    
+    
+build:
+  version: 3.0
+
+accounts:
+  message: "Welcome to Accounts app"
+  contactDetails:
+    name: John Doe
+    email: jhn@example.com
+  onCallSupport:
+   - 555-555-555
+   - 888-888-888
 
 
 
