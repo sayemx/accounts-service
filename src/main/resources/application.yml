@@ -7,14 +7,15 @@ server:
   port: 8080
 spring:
   config:
-    import:
-     - "application_qa.yml"
-     - "application_prod.yml"
+#    import:
+#     - "application_qa.yml"
+#     - "application_prod.yml"
+    import: "optional:configserver:http://localhost:8071/"
   profiles:
     active:
-      - "qa"
+      - "prod"
   application:
-    name: accounts-service
+    name: accounts
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -30,19 +31,30 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
     
     
-build:
-  version: 3.0
+#build:
+#  version: 3.0
+#
+#accounts:
+#  message: "Welcome to Accounts app"
+#  contactDetails:
+#    name: John Doe
+#    email: jhn@example.com
+#  onCallSupport:
+#   - 555-555-555
+#   - 888-888-888
 
-accounts:
-  message: "Welcome to Accounts app"
-  contactDetails:
-    name: John Doe
-    email: jhn@example.com
-  onCallSupport:
-   - 555-555-555
-   - 888-888-888
 
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
