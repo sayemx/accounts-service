@@ -128,7 +128,7 @@
 		        <version>3.4.6</version>
 		        <configuration>
 		          <to>
-		            <image>sayemx/${project.artifactId}:s8-2</image>
+		            <image>sayemx/${project.artifactId}:s9</image>
 		          </to>
 		        </configuration>
 		    </plugin>
