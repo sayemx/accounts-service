@@ -16,80 +16,80 @@ services:
 #    networks:
 #      - microservice
 
-  accountsdb:
-    image: mysql
-    container_name: accountsdb
-    ports:
-     - 3307:3306
-    healthcheck: 
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: accountsdb
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - microservice
+#  accountsdb:
+#    image: mysql
+#    container_name: accountsdb
+#    ports:
+#     - 3307:3306
+#    healthcheck: 
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#      timeout: 10s
+#      retries: 10
+#      interval: 10s
+#      start_period: 10s
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: accountsdb
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#    networks:
+#      - microservice
   
   
-  loansdb:
-    image: mysql
-    container_name: loansdb
-    ports:
-     - 3309:3306
-    healthcheck: 
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: loansdb
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - microservice
+#  loansdb:
+#    image: mysql
+#    container_name: loansdb
+#    ports:
+#     - 3309:3306
+#    healthcheck: 
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#      timeout: 10s
+#      retries: 10
+#      interval: 10s
+#      start_period: 10s
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: loansdb
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#    networks:
+#      - microservice
   
   
-  cardsdb:
-    image: mysql
-    container_name: cardsdb
-    ports:
-     - 3308:3306
-    healthcheck: 
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cardsdb
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - microservice
+#  cardsdb:
+#    image: mysql
+#    container_name: cardsdb
+#    ports:
+#     - 3308:3306
+#    healthcheck: 
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#      timeout: 10s
+#      retries: 10
+#      interval: 10s
+#      start_period: 10s
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: cardsdb
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#    networks:
+#      - microservice
   
   
   config-server:
-    image: "sayemx/configserver:s7"
+    image: "sayemx/configserver:s8"
     container_name: config-server
     ports:
       - "8071:8071"
-    depends_on:
-      rabbit:
-        condition: service_healthy
+#    depends_on:
+#      rabbit:
+#        condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
@@ -102,17 +102,43 @@ services:
           memory: 700m
     networks:
       - microservice
+  
+  
+  eureka-server:
+    image: "sayemx/eurekaserver:s8"
+    container_name: eureka-server
+    ports:
+      - "8070:8070"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - microservice
+    environment:
+      SPRING_APPLICATION_NAME: eurekaserver
    
      
   accounts-service:
-    image: "sayemx/accounts-service:s7"
+    image: "sayemx/accounts-service:s8-2"
     container_name: accounts-service
     ports:
       - "8080:8080"
     depends_on: 
       config-server:
         condition: service_healthy
-      accountsdb:
+#      accountsdb:
+#        condition: service_healthy
+      eureka-server:
         condition: service_healthy
     deploy:
       resources:
@@ -124,19 +150,23 @@ services:
       SPRING_APPLICATION_NAME: accounts
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071/"
       SPRING_PROFILES_ACTIVE: qa
-      SPRING_RABBITMQ_HOST: "rabbit"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
+#      SPRING_RABBITMQ_HOST: "rabbit"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/accountsdb"
+      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
+      
   
   
   loans-service:
-    image: "sayemx/loans-service:s7"
+    image: "sayemx/loans-service:s8-2"
     container_name: loans-service
     ports:
       - "8090:8090"
     depends_on: 
       config-server:
         condition: service_healthy
-      loansdb:
+#      loansdb:
+#        condition: service_healthy
+      eureka-server:
         condition: service_healthy
     deploy:
       resources:
@@ -148,19 +178,22 @@ services:
       SPRING_APPLICATION_NAME: loans
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071/"
       SPRING_PROFILES_ACTIVE: qa
-      SPRING_RABBITMQ_HOST: "rabbit"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
+#      SPRING_RABBITMQ_HOST: "rabbit"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal/loansdb"
+      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
       
       
   cards-service:
-    image: "sayemx/cards-service:s7"
+    image: "sayemx/cards-service:s8-2"
     container_name: cards-service
     ports:
       - "9000:9000"
     depends_on: 
       config-server:
         condition: service_healthy
-      cardsdb:
+#      cardsdb:
+#        condition: service_healthy
+      eureka-server:
         condition: service_healthy
     deploy:
       resources:
@@ -172,8 +205,9 @@ services:
       SPRING_APPLICATION_NAME: cards
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071/"
       SPRING_PROFILES_ACTIVE: qa
-      SPRING_RABBITMQ_HOST: "rabbit"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsdb"
+#      SPRING_RABBITMQ_HOST: "rabbit"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal/cardsdb"
+      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
 
 
 networks:
