@@ -23,12 +23,14 @@ import com.sayem.accounts.dto.CustomerDto;
 import com.sayem.accounts.dto.ResponseDto;
 import com.sayem.accounts.service.IAccountsService;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Tag(
 		name = "CRUD REST APIs for Accounts Controller",
@@ -38,6 +40,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 //@AllArgsConstructor
 @Validated
+@Slf4j
 public class AccountsController {
 	
 	private IAccountsService accountsService;
@@ -112,11 +115,19 @@ public class AccountsController {
         }
     }
 	
+	@Retry(name = "getBuildInfo", fallbackMethod = "fallbackmethod")
 	@GetMapping("/build-info")
 	public ResponseEntity<String> getBuildInfo(){
+		log.debug("Fallback method invoked");
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(buildVersion);
+	}
+	
+	public ResponseEntity<String> fallbackmethod(Throwable t) {
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("0.9"); 
 	}
 	
 	@GetMapping("/java-version")
