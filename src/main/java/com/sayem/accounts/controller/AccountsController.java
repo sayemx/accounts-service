@@ -80,6 +80,8 @@ public class AccountsController {
 													@Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
 													String mobileNumber){
 		
+		log.debug("Fetching Account Data");
+		
 		AccountsDto accountsDto = accountsService.fetchAccountDetails(mobileNumber);
 		
 		return new ResponseEntity<AccountsDto>(accountsDto, HttpStatus.OK);
@@ -132,6 +134,7 @@ public class AccountsController {
 	
 	@GetMapping("/java-version")
 	public ResponseEntity<String> getJavaVersion(){
+		log.debug("Fetching Java version Data");
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(environment.getProperty("JAVA_HOME"));
@@ -139,6 +142,7 @@ public class AccountsController {
 	
 	@GetMapping("/contact-info")
 	public ResponseEntity<AccountsContactInfoDto> getContactinfo(){
+		log.debug("Fetching Contact Info Data");
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(accountsContactInfoDto);

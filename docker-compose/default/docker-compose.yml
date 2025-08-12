@@ -16,74 +16,74 @@ services:
 #    networks:
 #      - microservice
 
-  accountsdb:
-    image: mysql
-    container_name: accountsdb
-    ports:
-     - 3307:3306
-    healthcheck: 
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: accountsdb
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - microservice
+#  accountsdb:
+#    image: mysql
+#    container_name: accountsdb
+#    ports:
+#     - 3307:3306
+#    healthcheck: 
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#      timeout: 10s
+#      retries: 10
+#      interval: 10s
+#      start_period: 10s
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: accountsdb
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#    networks:
+#      - microservice
   
   
-  loansdb:
-    image: mysql
-    container_name: loansdb
-    ports:
-     - 3309:3306
-    healthcheck: 
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: loansdb
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - microservice
+#  loansdb:
+#    image: mysql
+#    container_name: loansdb
+#    ports:
+#     - 3309:3306
+#    healthcheck: 
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#      timeout: 10s
+#      retries: 10
+#      interval: 10s
+#      start_period: 10s
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: loansdb
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#    networks:
+#      - microservice
   
   
-  cardsdb:
-    image: mysql
-    container_name: cardsdb
-    ports:
-     - 3308:3306
-    healthcheck: 
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cardsdb
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - microservice
+#  cardsdb:
+#    image: mysql
+#    container_name: cardsdb
+#    ports:
+#     - 3308:3306
+#    healthcheck: 
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#      timeout: 10s
+#      retries: 10
+#      interval: 10s
+#      start_period: 10s
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: cardsdb
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#    networks:
+#      - microservice
   
   
   config-server:
-    image: "sayemx/configserver:s9"
+    image: "sayemx/configserver:s11"
     container_name: config-server
     ports:
       - "8071:8071"
@@ -105,7 +105,7 @@ services:
   
   
   eureka-server:
-    image: "sayemx/eurekaserver:s9"
+    image: "sayemx/eurekaserver:s11"
     container_name: eureka-server
     ports:
       - "8070:8070"
@@ -129,7 +129,7 @@ services:
    
      
   accounts-service:
-    image: "sayemx/accounts-service:s9"
+    image: "sayemx/accounts-service:s11"
     container_name: accounts-service
     ports:
       - "8080:8080"
@@ -163,7 +163,7 @@ services:
   
   
   loans-service:
-    image: "sayemx/loans-service:s9"
+    image: "sayemx/loans-service:s11"
     container_name: loans-service
     ports:
       - "8090:8090"
@@ -196,7 +196,7 @@ services:
       
       
   cards-service:
-    image: "sayemx/cards-service:s9"
+    image: "sayemx/cards-service:s11"
     container_name: cards-service
     ports:
       - "9000:9000"
@@ -228,7 +228,7 @@ services:
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
   
   gateway-server:
-    image: "sayemx/gateway-server:s9"
+    image: "sayemx/gateway-server:s11"
     container_name: gateway-server
     ports:
       - "8072:8072"
