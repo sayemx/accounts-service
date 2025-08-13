@@ -2,6 +2,23 @@ version: "3.8"
 
 services:
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.2
+    container_name: keycloak
+    ports:
+     - "7080:8080"
+    environment:
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
+    command: "start-dev"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - microservice
+        
+
   read:
     image: grafana/loki:latest
     command: "-config.file=/etc/loki/config.yaml -target=read"
@@ -227,74 +244,74 @@ services:
 #    networks:
 #      - microservice
 
-#  accountsdb:
-#    image: mysql
-#    container_name: accountsdb
-#    ports:
-#     - 3307:3306
-#    healthcheck: 
-#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-#      timeout: 10s
-#      retries: 10
-#      interval: 10s
-#      start_period: 10s
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: accountsdb
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 700m
-#    networks:
-#      - microservice
+  accountsdb:
+    image: mysql
+    container_name: accountsdb
+    ports:
+     - 3307:3306
+    healthcheck: 
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accountsdb
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - microservice
   
   
-#  loansdb:
-#    image: mysql
-#    container_name: loansdb
-#    ports:
-#     - 3309:3306
-#    healthcheck: 
-#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-#      timeout: 10s
-#      retries: 10
-#      interval: 10s
-#      start_period: 10s
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: loansdb
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 700m
-#    networks:
-#      - microservice
+  loansdb:
+    image: mysql
+    container_name: loansdb
+    ports:
+     - 3309:3306
+    healthcheck: 
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loansdb
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - microservice
   
   
-#  cardsdb:
-#    image: mysql
-#    container_name: cardsdb
-#    ports:
-#     - 3308:3306
-#    healthcheck: 
-#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-#      timeout: 10s
-#      retries: 10
-#      interval: 10s
-#      start_period: 10s
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: cardsdb
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 700m
-#    networks:
-#      - microservice
+  cardsdb:
+    image: mysql
+    container_name: cardsdb
+    ports:
+     - 3308:3306
+    healthcheck: 
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cardsdb
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - microservice
   
     
   config-server:
-    image: "sayemx/configserver:s11"
+    image: "sayemx/configserver:s12"
     container_name: config-server
     ports:
       - "8071:8071"
@@ -318,7 +335,7 @@ services:
   
   
   eureka-server:
-    image: "sayemx/eurekaserver:s11"
+    image: "sayemx/eurekaserver:s12"
     container_name: eureka-server
     ports:
       - "8070:8070"
@@ -347,10 +364,10 @@ services:
    
      
   accounts-service:
-    image: "sayemx/accounts-service:s11"
+    image: "sayemx/accounts-service:s12"
     container_name: accounts-service
-    ports:
-      - "8080:8080"
+#    ports:
+#      - "8080:8080"
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
       interval: 20s
@@ -360,8 +377,8 @@ services:
     depends_on: 
       config-server:
         condition: service_healthy
-#      accountsdb:
-#        condition: service_healthy
+      accountsdb:
+        condition: service_healthy
       eureka-server:
         condition: service_healthy
     deploy:
@@ -376,7 +393,7 @@ services:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071/"
       SPRING_PROFILES_ACTIVE: prod
 #      SPRING_RABBITMQ_HOST: "rabbit"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/accountsdb"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
       JAVA_TOOL_OPTIONS: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
@@ -386,10 +403,10 @@ services:
   
   
   loans-service:
-    image: "sayemx/loans-service:s11"
+    image: "sayemx/loans-service:s12"
     container_name: loans-service
-    ports:
-      - "8090:8090"
+#    ports:
+#      - "8090:8090"
     healthcheck:
       test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
       interval: 20s
@@ -399,8 +416,8 @@ services:
     depends_on: 
       config-server:
         condition: service_healthy
-#      loansdb:
-#        condition: service_healthy
+      loansdb:
+        condition: service_healthy
       eureka-server:
         condition: service_healthy
     deploy:
@@ -415,7 +432,7 @@ services:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071/"
       SPRING_PROFILES_ACTIVE: prod
 #      SPRING_RABBITMQ_HOST: "rabbit"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/loansdb"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
       JAVA_TOOL_OPTIONS: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
@@ -424,10 +441,10 @@ services:
       
       
   cards-service:
-    image: "sayemx/cards-service:s11"
+    image: "sayemx/cards-service:s12"
     container_name: cards-service
-    ports:
-      - "9000:9000"
+#    ports:
+#      - "9000:9000"
     healthcheck:
       test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
       interval: 20s
@@ -437,8 +454,8 @@ services:
     depends_on: 
       config-server:
         condition: service_healthy
-#      cardsdb:
-#        condition: service_healthy
+      cardsdb:
+        condition: service_healthy
       eureka-server:
         condition: service_healthy
     deploy:
@@ -453,7 +470,7 @@ services:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071/"
       SPRING_PROFILES_ACTIVE: prod
 #      SPRING_RABBITMQ_HOST: "rabbit"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/cardsdb"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsdb"
       EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://eureka-server:8070/eureka/
       JAVA_TOOL_OPTIONS: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
@@ -461,7 +478,7 @@ services:
       OTEL_LOGS_EXPORTER: none
   
   gateway-server:
-    image: "sayemx/gateway-server:s11"
+    image: "sayemx/gateway-server:s12"
     container_name: gateway-server
     ports:
       - "8072:8072"
@@ -493,6 +510,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
 
 
 networks:
